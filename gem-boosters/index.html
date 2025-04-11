@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gem Boosters - Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #141E30, #243B55);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #ffffff, #00E5FF, #80D8FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            letter-spacing: 2px;
+            margin-top: 50px;
+        }
+        .container {
+            padding: 20px;
+            text-align: center;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .button {
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            background: #00E5FF;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: 0.3s;
+            width: 100%;
+            max-width: 300px;
+        }
+        .button:hover {
+            background: #00CCFF;
+            transform: scale(1.05);
+        }
+        .google-btn {
+            background: white !important;
+            color: #757575 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .google-btn:hover {
+            background: #f5f5f5 !important;
+            color: #000 !important;
+        }
+        .google-icon {
+            width: 20px;
+            margin-right: 10px;
+        }
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .auth-form input {
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+        }
+        .user-info {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gem Boosters</h1>
+
+    <div class="container">
+        <div id="userInfo" class="user-info hidden">
+            <p>Welcome, <span id="userEmail"></span>!</p>
+            <p>Your Points: <span id="userPoints">0</span> 💎</p>
+            <button class="button" onclick="logout()">Logout</button>
+        </div>
+
+        <div id="loginForm" class="auth-form">
+            <input type="email" id="loginEmail" placeholder="Email" required>
+            <input type="password" id="loginPassword" placeholder="Password" required>
+            <button class="button" onclick="login()">Login with Email</button>
+            <button class="button google-btn" onclick="googleLogin()">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" class="google-icon">
+                Sign in with Google
+            </button>
+            <p>Don't have an account? <a href="#" onclick="toggleForms()">Sign up</a></p>
+        </div>
+
+        <div id="signupForm" class="auth-form hidden">
+            <input type="email" id="signupEmail" placeholder="Email" required>
+            <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" required>
+            <button class="button" onclick="signup()">Sign Up</button>
+            <p>Already have an account? <a href="#" onclick="toggleForms()">Login</a></p>
+        </div>
+
+        <div id="gameButtons" class="hidden">
+            <button class="button" onclick="location.href='game.html'">Play Game</button>
+            <button class="button" onclick="location.href='withdraw.html'">Withdraw Points</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { 
+            auth,
+            database,
+            googleProvider,
+            ref,
+            set,
+            onValue,
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            signInWithPopup,
+            onAuthStateChanged,
+            signOut
+        } from './firebase-config.js';
+
+        // Auth state listener
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('signupForm').classList.add('hidden');
+                document.getElementById('userInfo').classList.remove('hidden');
+                document.getElementById('gameButtons').classList.remove('hidden');
+                document.getElementById('userEmail').textContent = user.email;
+                loadUserPoints(user.uid);
+            } else {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('userInfo').classList.add('hidden');
+                document.getElementById('gameButtons').classList.add('hidden');
+            }
+        });
+
+        function toggleForms() {
+            document.getElementById('loginForm').classList.toggle('hidden');
+            document.getElementById('signupForm').classList.toggle('hidden');
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        async function googleLogin() {
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const userRef = ref(database, 'users/' + result.user.uid);
+                
+                onValue(userRef, (snapshot) => {
+                    if (!snapshot.exists()) {
+                        set(userRef, { points: 0 });
+                    }
+                });
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        async function signup() {
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            if (password.length < 6) {
+                alert("Password must be at least 6 characters");
+                return;
+            }
+            
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                set(ref(database, 'users/' + userCredential.user.uid), { points: 0 });
+            } catch (error) {
+                alert(error.message);
+            }
+        }
+
+        function logout() {
+            signOut(auth);
+        }
+
+        function loadUserPoints(userId) {
+            const userRef = ref(database, 'users/' + userId);
+            onValue(userRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data?.points) {
+                    document.getElementById('userPoints').textContent = data.points;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

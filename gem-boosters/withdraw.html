@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gem Boosters - Withdraw</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #141E30, #243B55);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            font-size: 40px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #ffffff, #00E5FF, #80D8FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            letter-spacing: 2px;
+            margin-top: 50px;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+        }
+        .container {
+            padding: 40px;
+            text-align: center;
+            margin-top: 50px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            max-width: 800px;
+            margin: 50px auto;
+        }
+        .points {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 25px;
+            border-radius: 10px;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+        input, select {
+            margin: 10px 0;
+            padding: 12px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+        input::placeholder {
+            color: white;
+        }
+        select {
+            background: #444c54;
+            color: white;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 12px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .button {
+            margin: 15px;
+            padding: 18px 40px;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            background: linear-gradient(to right, #00E5FF, #00C853);
+            color: white;
+            cursor: pointer;
+            border-radius: 25px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+            transition: 0.3s ease-in-out;
+        }
+        .button:hover {
+            background: linear-gradient(to right, #00C853, #00E5FF);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        .coin-display {
+            font-size: 18px;
+            font-weight: bold;
+            color: #FFD700;
+            margin-top: 10px;
+        }
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        .history-table {
+            margin-top: 30px;
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+        .history-table th, .history-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .history-table th {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="location.href='index.html'">← Home</button>
+
+    <h1>Gem Boosters - Withdraw</h1>
+
+    <div class="container">
+        <p class="points">💎 Points: <span id="points">0</span></p>
+
+        <input type="text" id="userName" placeholder="Enter your Name" required />
+        <input type="number" id="userUID" placeholder="Enter your UID" required oninput="validateUID()" />
+
+        <select id="coinOption" onchange="updateCoinAmount()">
+            <option value="25 Diamonds">25 Diamonds 💎</option>
+            <option value="50 Diamonds">50 Diamonds 💎</option>
+            <option value="Weekly Light">Weekly Light 💎</option>
+            <option value="115 Diamonds">115 Diamonds 💎</option>
+            <option value="240 Diamonds">240 Diamonds 💎</option>
+            <option value="265 Diamonds">265 Diamonds 💎</option>
+            <option value="290 Diamonds">290 Diamonds 💎</option>
+            <option value="2X Weekly">2X Weekly 💎</option>
+            <option value="Weekly Membership">Weekly Membership 💎</option>
+            <option value="Monthly Membership">Monthly Membership 💎</option>
+            <option value="Level UP Pass">Level UP Pass 💎</option>
+        </select>
+
+        <div id="coinAmountDisplay" class="coin-display">2590 Game Coins</div>
+
+        <button class="button" onclick="withdraw()">Withdraw</button>
+
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>UID</th>
+                    <th>Diamond</th>
+                    <th>Coins Withdrawn</th>
+                    <th>Remaining Coins</th>
+                </tr>
+            </thead>
+            <tbody id="withdrawalHistory"></tbody>
+        </table>
+    </div>
+
+    <script type="module">
+        import { 
+            auth,
+            database,
+            ref,
+            update,
+            onValue,
+            push,
+            onAuthStateChanged
+        } from './firebase-config.js';
+
+        const coinOptions = {
+            "25 Diamonds": 2590,
+            "50 Diamonds": 4990,
+            "Weekly Light": 6990,
+            "115 Diamonds": 19990,
+            "240 Diamonds": 17990,
+            "265 Diamonds": 19990,
+            "290 Diamonds": 21990,
+            "2X Weekly": 33990,
+            "Weekly Membership": 17990,
+            "Monthly Membership": 69990,
+            "Level UP Pass": 20990
+        };
+
+        let currentPoints = 0;
+
+        onAuthStateChanged(auth, (user) => {
+            if (!user) window.location.href = 'index.html';
+        });
+
+        const userRef = ref(database, 'users/' + auth.currentUser?.uid);
+        onValue(userRef, (snapshot) => {
+            currentPoints = snapshot.val()?.points || 0;
+            document.getElementById('points').textContent = currentPoints;
+        });
+
+        const withdrawalsRef = ref(database, 'withdrawals/' + auth.currentUser?.uid);
+        onValue(withdrawalsRef, (snapshot) => {
+            const historyBody = document.getElementById("withdrawalHistory");
+            historyBody.innerHTML = "";
+            
+            const data = snapshot.val();
+            if (data) {
+                Object.values(data).forEach(entry => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${entry.name}</td>
+                        <td>${entry.uid}</td>
+                        <td>${entry.diamond}</td>
+                        <td>${entry.coinsWithdrawn}</td>
+                        <td>${entry.remainingCoins}</td>
+                    `;
+                    historyBody.appendChild(row);
+                });
+            }
+        });
+
+        function updateCoinAmount() {
+            const selectedOption = document.getElementById("coinOption").value;
+            document.getElementById("coinAmountDisplay").textContent = 
+                `${coinOptions[selectedOption]} Game Coins`;
+        }
+
+        function validateUID() {
+            document.getElementById("userUID").value = 
+                document.getElementById("userUID").value.replace(/\D/g, '');
+        }
+
+        async function withdraw() {
+            const name = document.getElementById("userName").value.trim();
+            const uid = document.getElementById("userUID").value.trim();
+            const selectedOption = document.getElementById("coinOption").value;
+            const coinAmount = coinOptions[selectedOption];
+
+            if (!name || !uid) {
+                alert("❌ Please fill in all fields!");
+                return;
+            }
+
+            if (coinAmount > currentPoints) {
+                alert("❌ You don't have enough coins to complete the withdrawal");
+                return;
+            }
+
+            try {
+                // Update points
+                await update(ref(database, 'users/' + auth.currentUser.uid), {
+                    points: currentPoints - coinAmount
+                });
+
+                // Add to withdrawal history
+                await push(ref(database, 'withdrawals/' + auth.currentUser.uid), {
+                    name,
+                    uid,
+                    diamond: selectedOption,
+                    coinsWithdrawn: coinAmount,
+                    remainingCoins: currentPoints - coinAmount,
+                    timestamp: Date.now()
+                });
+
+                // Telegram notification
+                const botToken = "8122083017:AAGQUojG-E2Rq9GcWyseRPPauIeGml-6mzI";
+                const chatId = "6944766772";
+                const message = `New Withdrawal:\nName: ${name}\nUID: ${uid}\nDiamonds: ${selectedOption}\nCoins: ${coinAmount}`;
+
+                await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ chat_id: chatId, text: message })
+                });
+
+                alert("✅ Withdrawal successful!");
+            } catch (error) {
+                alert("❌ Error: " + error.message);
+            }
+        }
+
+        // Initialize
+        updateCoinAmount();
+    </script>
+</body>
+</html>
